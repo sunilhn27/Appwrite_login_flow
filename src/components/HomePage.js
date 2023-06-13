@@ -5,8 +5,6 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 
 const HomePage = () => {
-    const [username, setUsername] = useState('');
-    const [email, setEmail] = useState('');
     const router = useRouter();
     const [isLoggedIn, setIsLoggedIn] = useState(false);
     const [session, setUserSession] = useState({
@@ -18,12 +16,16 @@ const HomePage = () => {
     const fetchSession = async () => {
         try {
             const userSession = await account.getSession('current');
-
             setUserSession({ ...userSession, name: userSession.userId, email: userSession.providerUid })
-            setUsername(userSession.userId);
-            setEmail(userSession.providerUid);
+
         } catch (error) {
-            console.error('Error fetching user data:', error);
+            if (error instanceof AppwriteException) {
+                // Handle the specific AppwriteException here
+                console.log('Appwrite Exception:', error.getMessage());
+            } else {
+                // Handle other types of errors here
+                console.log('Error:', error);
+            }
         }
     };
 
@@ -41,6 +43,8 @@ const HomePage = () => {
         };
 
         checkLoggedInStatus();
+
+
     }, []);
 
     const handleLogout = async () => {

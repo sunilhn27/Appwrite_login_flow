@@ -2,11 +2,15 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { account } from '@/services/appwrite.config';
 import { useRouter } from 'next/navigation';
+import { RiEyeFill, RiEyeOffFill } from 'react-icons/ri';
+
 export default function Login() {
+    const [showPassword, SetShowPassword] = useState(false)
     const [user, setUser] = useState({
         email: "",
         password: ""
     })
+
     const [error, setError] = useState("")
 
     const router = useRouter()
@@ -20,12 +24,17 @@ export default function Login() {
             const response = await account.createEmailSession(user.email, user.password);
             console.log("response", response);
             setUser("");
-            router.push("/homepage");
+            router.push("/homepage" ,{ isLoggedIn: true });
         } catch (error) {
             console.log("Invalid Credentials");
             setError("Invalid Credentials")
             setUser("");
         }
+    }
+
+    const handleTogglePassword = () => {
+        SetShowPassword((prev) => !prev);
+        console.log("changed state")
     }
 
 
@@ -45,16 +54,25 @@ export default function Login() {
                         onChange={(e) => setUser({ ...user, email: e.target.value })}
                     />
                 </div>
-                <div className="mb-6">
-                    <label htmlFor="password" className="block  text-sm font-bold mb-2 text-white">Password:</label>
+                <div className="mb-6 relative">
+                    <label htmlFor="password" className="block text-sm font-bold mb-2 text-white">
+                        Password:
+                    </label>
                     <input
                         id="password"
-                        type="password"
+                        type={showPassword ? 'text' : 'password'}
                         placeholder="Password"
                         className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                        value={user.password || ""}
+                        value={user.password || ''}
                         onChange={(e) => setUser({ ...user, password: e.target.value })}
                     />
+                    <button
+                        type="button"
+                        className="mt-4 absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 focus:outline-none"
+                        onClick={handleTogglePassword}
+                    >
+                        {showPassword ? <RiEyeOffFill /> : <RiEyeFill />}
+                    </button>
                 </div>
                 {error !== null ? <div className='text-red-500 text-sm text-center'>{error}</div> : ""}
                 <button
@@ -64,7 +82,7 @@ export default function Login() {
                     Login
                 </button>
             </form>
-            <Link href={'/reset'}>
+            <Link href={'/reset'} >
                 <p className="text-gray-500 text-sm mt-4 hover:text-white cursor-pointer" >Forgot password</p>
             </Link>
             <p className="text-gray-500 text-sm mt-4">

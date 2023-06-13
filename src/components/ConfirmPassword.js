@@ -1,23 +1,39 @@
 "use client"
 import { account } from '@/services/appwrite.config';
-import React, { useState } from 'react';
+import React, { useState ,useEffect} from 'react';
 import { useRouter } from 'next/navigation';
 
 const ConfirmPassword = () => {
-    //    const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
     const router = useRouter()
     const urlparams = new URLSearchParams(window.location.search)
     const userId = urlparams.get('userId')
     const secret = urlparams.get('secret')
+    const [msg, setMsg] = useState('');
+
+
+    useEffect(() => {
+        if (msg) {
+            const timer = setTimeout(() => {
+                setMsg('');
+            }, 5000);
+
+            return () => {
+                clearTimeout(timer);
+            };
+        }
+    }, [msg]);
+
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+
         await account.updateRecovery(userId, secret, password, confirmPassword).then(function (res) {
             console.log(res)
             router.push('/login')
         }, function (err) {
+            setMsg("Msg"+err)
             console.log(err)
         })
 
@@ -60,6 +76,8 @@ const ConfirmPassword = () => {
                     >
                         Submit
                     </button>
+                    {msg ? <p className='mt-5 text-red-500'>{msg}</p> : ""}
+
                 </form>
             </div>
         </div>

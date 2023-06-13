@@ -18,12 +18,11 @@ export default function Register() {
         //console.log(user)
         e.preventDefault()
         try {
-
             const promise = await account.create(
                 user.name,
                 user.email,
                 user.password,
-                ID.unique()
+                user.name,
             )
             router.push("/login")
         } catch (error) {

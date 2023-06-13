@@ -13,7 +13,7 @@ function NavBar() {
                 {/* Logo */}
                 <div className='flex items-center'>
                     <Link href={"/"}>
-                        <Image className='h-16 w-16' src={logo} alt='logo' />
+                        <Image className='h-16 w-16' src={logo} alt='logo' priority />
                     </Link>
                 </div>
                 {/* Links */}
